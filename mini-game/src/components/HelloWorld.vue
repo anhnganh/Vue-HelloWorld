@@ -61,7 +61,6 @@ export default {
   },
   methods:{
            async getCorrect(answer){
-            //  let data = new FormData();
               return await fetch('http://localhost:1337/mini-game/src/api/demo.php?url=/answer',{
                 method:'POST',
                 body: JSON.stringify(answer)
