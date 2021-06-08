@@ -23,13 +23,16 @@ header('Access-Control-Max-Age: 86400'); // cache for 1 day
         // file_put_contents('./data.json', json_encode($data));
         list($quest,$trueAnswer) = new_random_question(count($data));
         echo json_encode([$quest]);
-         $data[$quest->questId] = $trueAnswer;
-        file_put_contents('./data.json', json_encode($data));
+        $data[$quest->questId] = $quest;
+        // $data[$quest->questId] = $trueAnswer;
+        $quest->trueAnswer = $trueAnswer;
+        $current = json_encode($data);
+        file_put_contents('./data.json', $current);
         } else if ($url == "/answer" && $method == "POST") {
         $req = json_decode(file_get_contents('php://input'));
-        $res = new stdClass();
-        $res->ok = ($data[$req->questId] == $req->content);
-        echo json_encode($res);
+        $response = new stdClass();
+        $response->ok = ($data[$req->questId]['trueAnswer'] == $req->content);
+        echo json_encode($response);
         }
 
     function new_random_question($qid) {

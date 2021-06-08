@@ -1,7 +1,15 @@
 <template>
   <div id="app"> 
     <div id="myModal" class="modal"> <!--v-show="this.answered === 'abc'" --->
-        <div id="abc" class="over" >Game over! Your score: {{correct}}</div>
+        <div id="abc" class="over" >Game over! Your score: {{correct}}
+          <div class="userName">
+               <form action="">
+                <input name="userName" placeholder="abc..." />
+                <input type="submit" />
+              </form>
+          </div>
+        </div>
+       
     </div>
   <div class="container">
         <div class="correct" v-show="this.answered == true">Correct</div>
@@ -61,10 +69,10 @@ export default {
   },
   methods:{
            async getCorrect(answer){
+            //  let data = new FormData();
               return await fetch('http://localhost:1337/mini-game/src/api/demo.php?url=/answer',{
                 method:'POST',
                 body: JSON.stringify(answer)
-
               })
               .then((res)=>{
               return res.json()
@@ -88,7 +96,7 @@ export default {
                 }
                 if(this.countDown==0){
                 document.getElementById('myModal').style.display="block"
-                document.body.style.pointerEvents='none'
+                // document.body.style.pointerEvents='none'
                 }
             },
           async CheckAnswer(questID, answer){ 
@@ -96,7 +104,7 @@ export default {
              questId: questID,
              content: answer
            };
-          //  console.log(answer1);
+            console.log(answer1);
            let ok = await this.getCorrect(answer1);
            if(ok){
               console.log('dung')
@@ -105,10 +113,9 @@ export default {
                this.answered = true
           }
           else{
-            //  isCorrect=false
             console.log('sai')
             this.stopTimer()
-             document.body.style.pointerEvents='none'
+            //  document.body.style.pointerEvents='none'
              document.getElementById('myModal').style.display="block"
           }
         }
@@ -116,7 +123,6 @@ export default {
         toggleSeen:function(){
         this.seen = !this.seen;
         this.button.text = this.seen ? 'StartGame' : 'ResetGame';
-        //  this.countDownTimer()
           this.startTimer()
           console.log(this.seen)
           if(this.seen==true){
@@ -138,6 +144,10 @@ export default {
 <style>
 .body{
   font-family: 'Times New Roman', Times, serif;
+}
+.myModal form input{ 
+  width: 30px;
+  height: 30px;
 }
 .modal{
    display: none;   
@@ -161,7 +171,7 @@ export default {
   margin-left: 495px;
    padding: 120px;
    text-align: center; 
-   height: 50px;
+   height: 120px;
   border: 1px solid #888;
   width: 24%;
 }
