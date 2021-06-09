@@ -1,0 +1,5 @@
+Cách làm khá sáng tạo khi sinh câu hỏi thì đẩy vào file json rồi gọi từ json ra check
+
+Đã biết code vue => good
+
+Thử tiếp tục phát triển nó theo cách lưu vào mysql thay vì lưu và gọi ra từ file json nhé
