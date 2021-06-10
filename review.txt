@@ -3,3 +3,5 @@ Cách làm khá sáng tạo khi sinh câu hỏi thì đẩy vào file json rồi
 Đã biết code vue => good
 
 Thử tiếp tục phát triển nó theo cách lưu vào mysql thay vì lưu và gọi ra từ file json nhé
+
+// DucAnh: em mới làm xong rồi. Em chưa đẩy lên. =)) để em sửa nốt giao diện người dùng nữa anh ạ
