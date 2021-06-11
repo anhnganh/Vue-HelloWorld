@@ -9,23 +9,12 @@ header('Access-Control-Max-Age: 86400'); // cache for 1 day
     $method = $_SERVER['REQUEST_METHOD'];
     $data = json_decode(file_get_contents('./data.json'), true);
     if ($url == "/quest" && $method == "GET") {
-        // $q = new stdClass();
-        // $a = rand(2, 10);
-        // $b = rand(2, 10);
-        // $q->questId = count($data);
-        // $q->questContent = "$a x $b";
-        // $answers = [$a * $b, ($a - 1) * ($b - 1), ($a + 1) * ($b + 1), $a + $b];
-        // shuffle($answers);
-        // $q->answers = $answers;
-        // echo json_encode([$q]);
-        // $q->trueAnswer = $a * $b;
-        // $data[$q->questId] = $q;
-        // file_put_contents('./data.json', json_encode($data));
         list($quest,$trueAnswer) = new_random_question(count($data));
-        echo json_encode([$quest]);
+        // echo json_encode([$quest]);
         $data[$quest->questId] = $quest;
-        // $data[$quest->questId] = $trueAnswer;
         $quest->trueAnswer = $trueAnswer;
+        echo json_encode([$quest]);
+        $questId = insertQuest($quest);
         $current = json_encode($data);
         file_put_contents('./data.json', $current);
         } else if ($url == "/answer" && $method == "POST") {
@@ -34,7 +23,20 @@ header('Access-Control-Max-Age: 86400'); // cache for 1 day
         $response->ok = ($data[$req->questId]['trueAnswer'] == $req->content);
         echo json_encode($response);
         }
-
+        function insertQuest(object $quest){
+            $conn= new mysqli("localhost","root","","test");
+            // Check connection
+            if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+            }
+            $answer = json_encode($quest->answers);
+            $query =$conn -> prepare("INSERT INTO quest (questContent,answers,trueAnswer) VALUES (?,?,?)");
+            $query->bind_param("sss",$quest->questContent, $answer, $quest->trueAnswer);
+           if( !$query->execute()){
+               echo "error";
+           }
+           return mysqli_insert_id($conn);
+        }
     function new_random_question($qid) {
         $quest = new stdClass();
         $quest->questId = $qid;
@@ -57,7 +59,6 @@ header('Access-Control-Max-Age: 86400'); // cache for 1 day
         default:
         break;
     }
-    // $quest->trueAnswer=$trueAnswer;
     $trueAnswer = $answers[0];
     shuffle($answers);
     $quest->answers = $answers;
