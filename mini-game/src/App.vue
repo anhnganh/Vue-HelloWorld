@@ -1,8 +1,7 @@
 <template>
   <div id="app">
      <div></div>  
-    <HelloWorld v-if="question.length" :fetchNewQuest="fetchNewQuest" :next="next" :currentQuestion="question[index]" />
-
+    <HelloWorld v-if="question.length" :fetchNewQuest="fetchNewQuest" :userTop="userTop[index]" :currentQuestion="question[index]" />
   </div>
 </template>
 
@@ -15,7 +14,8 @@ export default {
     return{
       question:[],
       index:0,
-    }
+      userTop:[]
+    } 
   },
   components: {
     HelloWorld
@@ -42,6 +42,18 @@ export default {
     })
     .then((jsonData)=>{
        this.question = jsonData
+    })
+  },
+  mounted:function(){
+    fetch('http://localhost:1337/mini-game/src/api/scores.php?action=list',{
+      method:'GET'
+    })
+    .then((res)=>{
+      return res.json()
+    })
+    .then((jsondata)=>{
+      console.log(jsondata);
+      this.userTop = jsondata;
     })
   }
 }

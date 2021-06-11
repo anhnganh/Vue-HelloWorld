@@ -1,21 +1,36 @@
 <template>
   <div id="app"> 
+    <div class="scoreTop" v-show="this.seen ==true">
+      <div><h2>Top 10 score high</h2></div>
+        <table class="table" border="1">
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+          </tr>
+          <tr v-for="(user, index) in userTop.user" :key="index">
+              <td>{{user.name}}</td>
+              <td>{{user.score}}</td>
+          </tr>
+      </table>
+    </div>
     <div id="myModal" class="modal"> <!--v-show="this.answered === 'abc'" --->
-        <div id="abc" class="over" >Game over! Your score: {{correct}}
+      <form action="" method="POST">
+        <div id="abc" class="over">Game over! Your score: 
+          <div class="score1">
+            <input name="correct" v-model="userData.correct" />
+          </div>
           <div class="userName">
-               <form action="">
-                <input name="userName" placeholder="abc..." />
-                <input type="submit" />
-              </form>
+                <input type="text"  name="name" v-model="userData.name" placeholder="abc..." />
+                <input type="button" value="save" @click="save" />
           </div>
         </div>
-       
+      </form>
     </div>
   <div class="container">
         <div class="correct" v-show="this.answered == true">Correct</div>
         
         <div class="score">
-          Score: {{correct}}
+          Score: {{this.userData.correct}}
      </div>
      <div class="calculation">
        <span v-show="this.seen ==false" > {{currentQuestion.questContent}}</span>
@@ -45,17 +60,16 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 export default {
   name: 'HelloWorld',
   props: {
-    next:Function,
+    userTop:Object,
     currentQuestion: Object,
     fetchNewQuest:Function
   },
   data: function() {
     return{
-        correct:0,
         answered:false,
         button:{
             text:'StartGame'
@@ -64,10 +78,23 @@ export default {
         timer: null,
         countDown : 100,
         resetButton: false,
-      
+        userData:{
+          name:null,
+          correct:0
+        }
     }
   },
   methods:{
+          save:function(){
+              let data = new FormData();
+              data.append("name",this.userData.name);
+              data.append("score",this.userData.correct);
+              axios.post('http://localhost:1337/mini-game/src/api/scores.php?action=insert',data).then((res)=>{
+                console.log(res.data);
+              }).catch((err)=>{
+                console.log(err);
+              })
+          },
            async getCorrect(answer){
             //  let data = new FormData();
               return await fetch('http://localhost:1337/mini-game/src/api/demo.php?url=/answer',{
@@ -108,7 +135,7 @@ export default {
            let ok = await this.getCorrect(answer1);
            if(ok){
               console.log('dung')
-              this.correct++
+              this.userData.correct++
                this.fetchNewQuest()
                this.answered = true
           }
@@ -136,7 +163,11 @@ export default {
    answers(){
      let answers = this.currentQuestion.answers;
      return answers;
-   }
+   },
+    users(){
+      let users = this.usertop.user;
+      return users;
+    }
   },
  
 }
@@ -144,6 +175,19 @@ export default {
 <style>
 .body{
   font-family: 'Times New Roman', Times, serif;
+}
+.scoreTop{
+  font-size: 16px;
+  width: 200px;
+  float: left;
+  height: auto;
+  margin-left: 150px;
+  background-color: #eeab8d;
+  border-radius: 10px;
+}
+.scoreTop .table {
+  margin-top: 20px;
+  margin-left: 50px;
 }
 .myModal form input{ 
   width: 30px;
@@ -162,6 +206,9 @@ export default {
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4)
 }
+.over .score1{
+  float: left;
+}
 .over{
    background-color: #f3996c;
   /* margin: auto; */
@@ -171,13 +218,14 @@ export default {
   margin-left: 495px;
    padding: 120px;
    text-align: center; 
-   height: 120px;
+   height: 200px;
   border: 1px solid #888;
   width: 24%;
+  float: left;
 }
 .container{
   float: left;
-  margin-left: 30%;
+  margin-left: 10%;
   text-align: center;
   background: #9dd2ea;
   width: 650px;
